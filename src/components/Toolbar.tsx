@@ -1,5 +1,5 @@
 import { Brain, Layers, Network, Cpu, Box } from 'lucide-react';
-import { useDraggable } from '@dnd-kit/core';
+import { v4 as uuidv4 } from 'uuid';
 
 const tools = [
   { type: 'input', icon: Brain, label: 'Input Layer', defaultUnits: 784 },
@@ -10,27 +10,31 @@ const tools = [
   { type: 'output', icon: Brain, label: 'Output Layer', defaultUnits: 10 },
 ];
 
-function DraggableItem({ type, icon: Icon, label, defaultUnits }: { type: string; icon: React.ElementType; label: string; defaultUnits: number }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: `${type}-template`,
-    data: {
+function DraggableItem({ type, icon: Icon, label, defaultUnits }: { 
+  type: string; 
+  icon: React.ElementType; 
+  label: string; 
+  defaultUnits: number 
+}) {
+  const handleDragStart = (e: React.DragEvent) => {
+    const layerData = {
+      id: uuidv4(),
       type,
       isTemplate: true,
       defaultUnits,
-    },
-  });
+      name: `${type.charAt(0).toUpperCase() + type.slice(1)} Layer`,
+      activation: type === 'dense' ? 'relu' : undefined
+    };
+    
+    e.dataTransfer.setData('application/json', JSON.stringify(layerData));
+  };
 
   return (
     <div
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      style={{
-        opacity: isDragging ? 0.5 : undefined,
-        cursor: 'move',
-      }}
+      draggable
+      onDragStart={handleDragStart}
       className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all
-        ${isDragging ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+        hover:bg-gray-50 cursor-move`}
     >
       <Icon className="w-5 h-5 text-indigo-600" />
       <span className="text-sm text-gray-700">{label}</span>

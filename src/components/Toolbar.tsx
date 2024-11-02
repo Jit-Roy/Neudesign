@@ -29,7 +29,7 @@ function DraggableItem({ type, icon: Icon, label, defaultUnits }: { type: string
         opacity: isDragging ? 0.5 : undefined,
         cursor: 'move',
       }}
-      className={`flex items-center space-x-3 p-3 rounded-md transition-all
+      className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all
         ${isDragging ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
     >
       <Icon className="w-5 h-5 text-indigo-600" />
@@ -40,12 +40,13 @@ function DraggableItem({ type, icon: Icon, label, defaultUnits }: { type: string
 
 export function Toolbar() {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <h2 className="text-lg font-semibold mb-4">Layer Types</h2>
-      <div className="space-y-2">
-        {tools.map((tool) => (
-          <DraggableItem key={tool.type} {...tool} />
-        ))}
+    <div className="h-full bg-white">
+      <div className="h-full max-w-screen-2xl mx-auto px-4 flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          {tools.map((tool) => (
+            <DraggableItem key={tool.type} {...tool} />
+          ))}
+        </div>
       </div>
     </div>
   );

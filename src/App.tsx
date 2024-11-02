@@ -43,7 +43,6 @@ function App() {
     
     if (!over) return;
 
-    // Handle new layer creation from toolbar
     if (active.data.current?.isTemplate && over.id === 'canvas') {
       const { type, defaultUnits } = active.data.current;
       
@@ -52,6 +51,7 @@ function App() {
       
       const canvasRect = canvas.getBoundingClientRect();
       
+      // Adjust drop position to account for the header and toolbar height
       const dropPosition = {
         x: event.delta.x + ((event.active.rect.current?.initial?.left ?? 0) - canvasRect.left),
         y: event.delta.y + ((event.active.rect.current?.translated?.top ?? 0) - canvasRect.top)
@@ -68,7 +68,6 @@ function App() {
       addLayer(newLayer);
       updatePosition(newLayer.id, dropPosition);
     }
-    // Handle existing layer movement
     else if (!active.data.current?.isTemplate && over.id === 'canvas') {
       const layerId = active.id as string;
       const currentPosition = positions[layerId] || { x: 0, y: 0 };
@@ -80,7 +79,6 @@ function App() {
       
       updatePosition(layerId, newPosition);
     }
-    // Handle connecting layers
     else if (!active.data.current?.isTemplate && over.id !== 'canvas') {
       const fromId = active.id as string;
       const toId = over.id as string;
@@ -114,25 +112,25 @@ function App() {
         }
       }}
     >
-      <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex items-center space-x-3">
-              <Brain className="w-8 h-8 text-indigo-600" />
-              <h1 className="text-2xl font-bold text-gray-900">
-                Neural Network Designer
-              </h1>
-            </div>
+      <div className="h-screen flex flex-col bg-gray-100">
+        {/* Header */}
+        <header className="h-14 bg-white shadow-sm flex-shrink-0">
+          <div className="h-full max-w-screen-2xl mx-auto px-4 flex items-center space-x-3">
+            <Brain className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-2xl font-bold text-gray-900">
+              Neural Network Designer
+            </h1>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <div className="flex gap-6">
-            <aside className="w-64 flex-shrink-0">
-              <Toolbar />
-            </aside>
-            <Canvas />
-          </div>
+        {/* Toolbar */}
+        <div className="h-16 bg-white shadow-sm flex-shrink-0">
+          <Toolbar />
+        </div>
+        
+        {/* Main Content */}
+        <main className="flex-1 relative overflow-hidden">
+          <Canvas />
         </main>
       </div>
     </DndContext>

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'; 
+import { useCallback, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { LayerCard } from './LayerCard';
 import { useNetworkStore } from '../store/useNetworkStore';
@@ -21,8 +21,7 @@ export function Canvas() {
     const canvasRect = canvas.getBoundingClientRect();
     const cardWidth = 280;
     const cardHeight = 160;
-    
-    // Ensure the layer stays within canvas bounds
+
     const boundedPosition = {
       x: Math.max(0, Math.min(newPosition.x, canvasRect.width - cardWidth)),
       y: Math.max(0, Math.min(newPosition.y, canvasRect.height - cardHeight))
@@ -31,31 +30,28 @@ export function Canvas() {
     updatePosition(id, boundedPosition);
   }, [updatePosition]);
 
-  // Get position with better cascade effect
   const getLayerPosition = (id: string, index: number) => {
     if (positions[id]) return positions[id];
 
-    // Improved cascading with wrapping
-    const column = Math.floor(index / 3); // 3 layers per column
+    const column = Math.floor(index / 3);
     const row = index % 3;
-    
+
     const position = {
-      x: 40 + (column * 300), // 300px spacing between columns
-      y: 40 + (row * 180)     // 180px spacing between rows
+      x: 40 + (column * 300),
+      y: 40 + (row * 180)
     };
-    
+
     updatePosition(id, position);
     return position;
   };
 
   return (
-    <div
+    <div 
       ref={setNodeRef}
       id="canvas"
-      className={`flex-1 bg-white rounded-lg relative transition-colors duration-200 ${
+      className={`absolute inset-0 bg-white transition-colors duration-200 ${
         isOver ? 'bg-indigo-50' : ''
       }`}
-      style={{ height: '800px' }}
     >
       {layers.map((layer, index) => (
         <LayerCard
@@ -88,7 +84,7 @@ export function Canvas() {
         {connections.map(({ from, to }, index) => {
           const fromPos = positions[from] || getLayerPosition(from, layers.findIndex(l => l.id === from));
           const toPos = positions[to] || getLayerPosition(to, layers.findIndex(l => l.id === to));
-          
+
           const x1 = fromPos.x + 280;
           const y1 = fromPos.y + 80;
           const x2 = toPos.x;

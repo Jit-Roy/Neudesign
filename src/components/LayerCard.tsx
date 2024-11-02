@@ -1,11 +1,21 @@
-// LayerCard.tsx
 import { useState, useRef } from 'react';
-import { X, GripVertical } from 'lucide-react';
+import { X, GripVertical, Link } from 'lucide-react';
 import { useNetworkStore } from '../store/useNetworkStore';
 import { LayerCardProps, iconMap, getLayerStyle, getIconStyle } from './LayerCardStyles';
 
-export function LayerCard({ layer, isSelected, position, onClick }: LayerCardProps) {
+export function LayerCard({ 
+  layer, 
+  isSelected, 
+  position, 
+  onClick,
+  onStartConnection,
+  onEndConnection
+}: LayerCardProps & {
+  onStartConnection?: () => void;
+  onEndConnection?: () => void;
+}) {
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const dragStartPos = useRef({ x: 0, y: 0 });
   const removeLayer = useNetworkStore((state) => state.removeLayer);
   const updatePosition = useNetworkStore((state) => state.updatePosition);
@@ -18,14 +28,12 @@ export function LayerCard({ layer, isSelected, position, onClick }: LayerCardPro
       y: e.clientY - position.y
     };
 
-    // Set drag data
     e.dataTransfer.setData('application/json', JSON.stringify({
       id: layer.id,
       type: layer.type,
       isTemplate: false
     }));
 
-    // Create a transparent drag image to hide the default ghost image
     const emptyImage = document.createElement('div');
     emptyImage.style.display = 'none';
     document.body.appendChild(emptyImage);
@@ -34,7 +42,7 @@ export function LayerCard({ layer, isSelected, position, onClick }: LayerCardPro
   };
 
   const handleDrag = (e: React.DragEvent) => {
-    if (!e.clientX || !e.clientY) return; // Ignore invalid drag events
+    if (!e.clientX || !e.clientY) return;
     
     const newPosition = {
       x: e.clientX - dragStartPos.current.x,
@@ -54,19 +62,22 @@ export function LayerCard({ layer, isSelected, position, onClick }: LayerCardPro
       onDragStart={handleDragStart}
       onDrag={handleDrag}
       onDragEnd={handleDragEnd}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{
         position: 'absolute',
         top: 0,
         left: 0,
         transform: `translate(${position.x}px, ${position.y}px)`,
-        zIndex: isDragging ? 999 : 1,
+        zIndex: isDragging ? 999 : isSelected ? 100 : 1,
         width: '280px',
         touchAction: 'none',
-        transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+        transition: isDragging ? 'none' : 'all 0.2s ease-out',
         userSelect: 'none'
       }}
-      className={`${getLayerStyle(layer.type)} p-4 cursor-move
-        ${isSelected ? 'ring-2 ring-indigo-500' : ''}`}
+      className={`${getLayerStyle(layer.type)} p-4
+        ${isSelected ? 'ring-2 ring-indigo-500' : ''}
+        ${isHovered ? 'shadow-xl' : 'shadow-lg'}`}
       onClick={onClick}
     >
       <div className="flex justify-between items-start">
@@ -97,15 +108,30 @@ export function LayerCard({ layer, isSelected, position, onClick }: LayerCardPro
             </div>
           </div>
         </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            removeLayer(layer.id);
-          }}
-          className="p-1.5 hover:bg-white/50 rounded-lg transition-colors"
-        >
-          <X className="w-4 h-4 text-gray-500 hover:text-red-500" />
-        </button>
+        <div className="flex space-x-1">
+          <button
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              onStartConnection?.();
+            }}
+            onMouseUp={(e) => {
+              e.stopPropagation();
+              onEndConnection?.();
+            }}
+            className="p-1.5 hover:bg-white/50 rounded-lg transition-colors"
+          >
+            <Link className="w-4 h-4 text-indigo-500 hover:text-indigo-600" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              removeLayer(layer.id);
+            }}
+            className="p-1.5 hover:bg-white/50 rounded-lg transition-colors"
+          >
+            <X className="w-4 h-4 text-gray-500 hover:text-red-500" />
+          </button>
+        </div>
       </div>
     </div>
   );

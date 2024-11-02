@@ -57,4 +57,6 @@ export interface LayerCardProps {
   position: { x: number; y: number };
   onPositionChange?: (id: string, position: { x: number; y: number }) => void;
   onClick?: () => void;
+  onStartConnection?: () => void;
+  onEndConnection?: () => void;
 }

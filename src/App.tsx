@@ -50,8 +50,7 @@ function App() {
       if (!canvas) return;
       
       const canvasRect = canvas.getBoundingClientRect();
-      
-      // Adjust drop position to account for the header and toolbar height
+    
       const dropPosition = {
         x: event.delta.x + ((event.active.rect.current?.initial?.left ?? 0) - canvasRect.left),
         y: event.delta.y + ((event.active.rect.current?.translated?.top ?? 0) - canvasRect.top)

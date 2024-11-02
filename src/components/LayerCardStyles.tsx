@@ -56,7 +56,7 @@ export interface LayerCardProps {
   isSelected?: boolean;
   position: { x: number; y: number };
   onPositionChange?: (id: string, position: { x: number; y: number }) => void;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
   onStartConnection?: () => void;
   onEndConnection?: () => void;
 }

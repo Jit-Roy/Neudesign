@@ -34,6 +34,8 @@ export function Canvas() {
     containerHeight: 0
   });
 
+  const [copiedLayer, setCopiedLayer] = useState<any>(null);
+
   useEffect(() => {
     const updateBounds = () => {
       if (containerRef.current && canvasRef.current) {
@@ -224,6 +226,48 @@ export function Canvas() {
     }
   }, [handleWheel]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) { // metaKey for Mac support
+        switch (e.key.toLowerCase()) {
+          case 'c':
+            if (selectedLayer) {
+              const layerToCopy = layers.find(l => l.id === selectedLayer);
+              if (layerToCopy) {
+                setCopiedLayer({
+                  ...layerToCopy,
+                  position: positions[layerToCopy.id]
+                });
+              }
+            }
+            break;
+          
+          case 'v':
+            if (copiedLayer) {
+              const newLayer = {
+                ...copiedLayer,
+                id: crypto.randomUUID(), // Generate new ID for the copy
+                name: `${copiedLayer.name} (copy)`
+              };
+              
+              // Add offset to make the pasted layer visible
+              const newPosition = {
+                x: copiedLayer.position.x + 20,
+                y: copiedLayer.position.y + 20
+              };
+              
+              addLayer(newLayer);
+              updatePosition(newLayer.id, newPosition);
+            }
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedLayer, layers, positions, copiedLayer, addLayer, updatePosition]);
+
   return (
     <div 
       ref={containerRef}
@@ -272,6 +316,7 @@ export function Canvas() {
         className="absolute inset-0 bg-indigo-50"
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        onClick={() => setSelectedLayer(null)}
         style={{
           transform: `scale(${zoom}) translate(${viewportOffset.x / zoom}px, ${viewportOffset.y / zoom}px)`,
           transformOrigin: '0 0',
@@ -299,14 +344,17 @@ export function Canvas() {
         <div className="relative" style={{ zIndex: 10 }}>
           {layers.map((layer) => (
             <LayerCard
-              key={layer.id}
-              layer={layer}
-              position={positions[layer.id] || { x: 0, y: 0 }}
-              isSelected={layer.id === selectedLayer}
-              onClick={() => setSelectedLayer(layer.id)}
-              onStartConnection={() => startConnection(layer.id)}
-              onEndConnection={() => endConnection(layer.id)}
-            />
+            key={layer.id}
+            layer={layer}
+            position={positions[layer.id] || { x: 0, y: 0 }}
+            isSelected={layer.id === selectedLayer}
+            onClick={(e) => {
+              e.stopPropagation(); 
+              setSelectedLayer(layer.id);
+            }}
+            onStartConnection={() => startConnection(layer.id)}
+            onEndConnection={() => endConnection(layer.id)}
+          />
           ))}
         </div>
       </div>

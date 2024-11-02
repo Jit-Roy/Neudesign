@@ -246,11 +246,10 @@ export function Canvas() {
             if (copiedLayer) {
               const newLayer = {
                 ...copiedLayer,
-                id: crypto.randomUUID(), // Generate new ID for the copy
-                name: `${copiedLayer.name} (copy)`
+                id: crypto.randomUUID(), 
+                name: `${copiedLayer.name}`
               };
               
-              // Add offset to make the pasted layer visible
               const newPosition = {
                 x: copiedLayer.position.x + 20,
                 y: copiedLayer.position.y + 20

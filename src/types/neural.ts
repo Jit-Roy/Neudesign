@@ -3,13 +3,17 @@ export type LayerType =
   | 'dense' 
   | 'conv2d' 
   | 'lstm' 
-  | 'attention' 
+  | 'attention'
   | 'output'
-  | 'pooling'
-  | 'rnn'
-  | 'gru'
+  | 'maxpool2d'
+  | 'avgpool2d'
+  | 'dropout'
   | 'batchnorm'
-  | 'flatten';
+  | 'flatten'
+  | 'gru'
+  | 'concat'
+  | 'add'
+  | 'split';
 
   export type ActivationFunction = 
   | 'relu'
@@ -47,9 +51,10 @@ export interface NeuralLayer {
   id: string;
   type: LayerType;
   name: string;
-  inputShape: number[] | null;
-  outputShape: number[] | null;
-  activation: ActivationFunction;
+  units?: number;
+  activation?: string | null;
+  inputShape?: number[];
+  outputShape?: number[];
   config?: LayerConfig;
 }
 

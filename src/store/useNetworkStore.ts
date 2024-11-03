@@ -142,14 +142,7 @@ export const useNetworkStore = create<NetworkState>((set, get) => ({
       case 'dense':
         return [typeof layer.outputShape === 'number' ? layer.outputShape : 0];
       case 'conv2d': {
-        // const { kernelSize = [3, 3], stride = [1, 1], padding = 'same' } = layer.config || {};
-        // Implement conv2d output shape calculation
-        return inputShape.flat(); // Simplified for example
-      }
-      case 'pooling': {
-        const { poolSize = [2, 2] } = layer.config || {};
-        // Implement pooling output shape calculation
-        return inputShape.map((dim, i) => i < 2 ? Math.floor(dim / poolSize[i]) : dim);
+        return inputShape.flat(); 
       }
       default:
         return inputShape;

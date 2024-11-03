@@ -97,7 +97,9 @@ export function Canvas() {
           type: data.type,
           name: data.name,
           units: data.defaultUnits,
-          activation: data.activation
+          activation: data.activation,
+          inputShape: data.inputShape || [],
+          outputShape: data.outputShape || []
         };
 
         addLayer(newLayer);
